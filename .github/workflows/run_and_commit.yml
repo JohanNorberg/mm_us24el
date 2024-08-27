@@ -4,6 +4,7 @@ name: Run and Commit Changes
 on:
   schedule:
     - cron: '0 * * * *'  # This cron expression runs the job every hour
+  workflow_dispatch:
 
 jobs:
   run_script_and_commit:
