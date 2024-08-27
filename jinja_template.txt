@@ -147,7 +147,8 @@
 <body>
     <h1>Manifold Markets Simulation</h1>
     <div class="description">
-        Collecting Manifold Markets odds for US 2024 Presidential Elections
+        <br>Collecting Manifold Markets odds for US 2024 Presidential Elections
+        <br>Build time: {{ timestamp }}
     </div>
 
     <div class="section">
@@ -155,7 +156,7 @@
         <div class="bar-container">
             <div class="blue" style="flex: 0 0 {{ simple.democrat_percentage }}%;"></div>
             <div class="red" style="flex: 0 0 {{ simple.republican_percentage }}%;"></div>
-            <div class="percentage">D: {{ simple.democrat_votes }}% - R: {{ simple.republican_votes }}%</div>
+            <div class="percentage">D: {{ simple.democrat_votes }} - R: {{ simple.republican_votes }}</div>
         </div>
     </div>
 
@@ -166,6 +167,11 @@
             <div class="red" style="flex: 0 0 {{ simulation.republican_probability }}%;"></div>
             <div class="percentage">D: {{ simulation.democrat_probability }}% - R: {{ simulation.republican_probability }}%</div>
         </div>
+        <div class="bar-container">
+            <div class="blue" style="flex: 0 0 {{ simulation.democrat_votes_median_percent }}%;"></div>
+            <div class="red" style="flex: 0 0 {{ simulation.republican_votes_median_percent }}%;"></div>
+            <div class="percentage">D: {{ simulation.democrat_votes_median }} - R: {{ simulation.republican_votes_median }}</div>
+        </div>
     </div>
 
     <div class="section">
@@ -174,6 +180,11 @@
             <div class="blue" style="flex: 0 0 {{ simulation_adjusted.democrat_probability }}%;"></div>
             <div class="red" style="flex: 0 0 {{ simulation_adjusted.republican_probability }}%;"></div>
             <div class="percentage">D: {{ simulation_adjusted.democrat_probability }}% - R: {{ simulation_adjusted.republican_probability }}%</div>
+        </div>
+        <div class="bar-container">
+            <div class="blue" style="flex: 0 0 {{ simulation_adjusted.democrat_votes_median_percent }}%;"></div>
+            <div class="red" style="flex: 0 0 {{ simulation_adjusted.republican_votes_median_percent }}%;"></div>
+            <div class="percentage">D: {{ simulation_adjusted.democrat_votes_median }} - R: {{ simulation_adjusted.republican_votes_median }}</div>
         </div>
     </div>
 

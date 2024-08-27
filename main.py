@@ -341,6 +341,8 @@ if __name__ == '__main__':
             'republican_wins': odds_data['simulation']['republican_wins'],
             'democrat_votes_median': odds_data['simulation']['democrat_votes_median'],
             'republican_votes_median': odds_data['simulation']['republican_votes_median'],
+            'democrat_votes_median_percent': round((odds_data['simulation']['democrat_votes_median'] / total_ev) * 100),
+            'republican_votes_median_percent': round((odds_data['simulation']['republican_votes_median'] / total_ev) * 100),
             'democrat_states_median': odds_data['simulation']['democrat_states_median'],
             'republican_states_median': odds_data['simulation']['republican_states_median'],
             'democrat_probability': round(odds_data['simulation']['democrat_probability'] * 100),
@@ -351,6 +353,8 @@ if __name__ == '__main__':
             'republican_wins': odds_data['simulation_adjusted']['republican_wins'],
             'democrat_votes_median': odds_data['simulation_adjusted']['democrat_votes_median'],
             'republican_votes_median': odds_data['simulation_adjusted']['republican_votes_median'],
+            'democrat_votes_median_percent': round((odds_data['simulation_adjusted']['democrat_votes_median'] / total_ev) * 100),
+            'republican_votes_median_percent': round((odds_data['simulation_adjusted']['republican_votes_median'] / total_ev) * 100),
             'democrat_states_median': odds_data['simulation_adjusted']['democrat_states_median'],
             'republican_states_median': odds_data['simulation_adjusted']['republican_states_median'],
             'democrat_probability': round(odds_data['simulation_adjusted']['democrat_probability'] * 100),
@@ -358,12 +362,17 @@ if __name__ == '__main__':
         }
     }
 
+    from datetime import datetime
+
+    # Get the current UTC time and format it as a readable string
+    current_time_utc = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
 
     rendered_html = template.render(simple=mapped_odds_data['simple'],
                                     simulation=mapped_odds_data['simulation'],
                                     simulation_adjusted=mapped_odds_data['simulation_adjusted'],
                                     states=mapped_states,
-                                    total_ev=total_ev)
+                                    total_ev=total_ev,
+                                    timestamp=current_time_utc)
 
     # Save the rendered HTML to a file
     with open('index.html', 'w') as f:
