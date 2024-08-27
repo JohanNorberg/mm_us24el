@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manifold Markets Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        h1, h2 {
+            color: #ecf0f1;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            background-color: #34495e;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .section h2 {
+            margin-bottom: 10px;
+        }
+
+        .bar-container {
+            display: flex;
+            height: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .red {
+            background-color: #e74c3c;
+        }
+
+        .blue {
+            background-color: #3498db;
+        }
+
+        .percentage {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            line-height: 40px;
+            font-size: 16px;
+        }
+
+        .state {
+            display: flex;
+            flex-direction: column;
+            width: calc(25% - 10px);
+            background-color: #34495e;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .state:hover {
+            transform: translateY(-5px);
+        }
+
+        .state-name {
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 1px solid #2c3e50;
+            border-radius: 10px 10px 0 0;
+            background-color: #16a085;
+        }
+
+        .state-bar {
+            display: flex;
+            height: 30px;
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .state-bar .red, .state-bar .blue {
+            height: 100%;
+        }
+
+        .state .percentage {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            line-height: 30px;
+            font-size: 14px;
+        }
+
+        .ev-total {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            text-align: center;
+            color: #ecf0f1;
+        }
+
+        @media (max-width: 1000px) {
+            .state {
+                width: calc(50% - 10px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .state {
+                width: 100%;
+            }
+        }
+
+        <!-- center p -->
+        p {
+            text-align: center;
+            width: 100%;
+        }
+
+        .description {
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Manifold Markets Simulation</h1>
+    <div class="description">
+        Collecting Manifold Markets odds for US 2024 Presidential Elections
+    </div>
+
+    <div class="section">
+        <h2>Current EV Distribution</h2>
+        <div class="bar-container">
+            <div class="blue" style="flex: 0 0 53%;"></div>
+            <div class="red" style="flex: 0 0 47%;"></div>
+            <div class="percentage">D: 287% - R: 251%</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Monte Carlo Simulation Result</h2>
+        <div class="bar-container">
+            <div class="blue" style="flex: 0 0 65%;"></div>
+            <div class="red" style="flex: 0 0 35%;"></div>
+            <div class="percentage">D: 65% - R: 35%</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Adjusted Monte Carlo Simulation Result</h2>
+        <div class="bar-container">
+            <div class="blue" style="flex: 0 0 66%;"></div>
+            <div class="red" style="flex: 0 0 34%;"></div>
+            <div class="percentage">D: 66% - R: 34%</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Loop through states -->
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-98654274ab42" class="state">
+            <div class="state-name">Alabama (9 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 96.1%;"></div>
+                <div class="blue" style="flex: 0 0 3.9%;"></div>
+                <div class="percentage">R: 96.1% - D: 3.9%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-3834d8e5168f" class="state">
+            <div class="state-name">Alaska (3 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 88.2%;"></div>
+                <div class="blue" style="flex: 0 0 11.8%;"></div>
+                <div class="percentage">R: 88.2% - D: 11.8%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-c1307cf9f69a" class="state">
+            <div class="state-name">Arizona (11 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 49.6%;"></div>
+                <div class="blue" style="flex: 0 0 50.4%;"></div>
+                <div class="percentage">R: 49.6% - D: 50.4%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-e845a612e2a4" class="state">
+            <div class="state-name">Arkansas (6 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 97.2%;"></div>
+                <div class="blue" style="flex: 0 0 2.8%;"></div>
+                <div class="percentage">R: 97.2% - D: 2.8%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-26a1eb1b8ce6" class="state">
+            <div class="state-name">California (54 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 1.2%;"></div>
+                <div class="blue" style="flex: 0 0 98.8%;"></div>
+                <div class="percentage">R: 1.2% - D: 98.8%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-995251995021" class="state">
+            <div class="state-name">Colorado (10 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 8.2%;"></div>
+                <div class="blue" style="flex: 0 0 91.8%;"></div>
+                <div class="percentage">R: 8.2% - D: 91.8%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-12e8e8ae4aee" class="state">
+            <div class="state-name">Connecticut (7 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 2.9%;"></div>
+                <div class="blue" style="flex: 0 0 97.1%;"></div>
+                <div class="percentage">R: 2.9% - D: 97.1%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-86216dcc6ec8" class="state">
+            <div class="state-name">Delaware (3 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 3.5%;"></div>
+                <div class="blue" style="flex: 0 0 96.5%;"></div>
+                <div class="percentage">R: 3.5% - D: 96.5%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-11704714dec4" class="state">
+            <div class="state-name">District of Columbia (3 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 1.0%;"></div>
+                <div class="blue" style="flex: 0 0 99.0%;"></div>
+                <div class="percentage">R: 1.0% - D: 99.0%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-a0c0e217efb2" class="state">
+            <div class="state-name">Florida (30 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 84.0%;"></div>
+                <div class="blue" style="flex: 0 0 16.0%;"></div>
+                <div class="percentage">R: 84.0% - D: 16.0%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-9d5b554982a7" class="state">
+            <div class="state-name">Georgia (16 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 57.0%;"></div>
+                <div class="blue" style="flex: 0 0 43.0%;"></div>
+                <div class="percentage">R: 57.0% - D: 43.0%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-878851234156" class="state">
+            <div class="state-name">Hawaii (4 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 2.2%;"></div>
+                <div class="blue" style="flex: 0 0 97.8%;"></div>
+                <div class="percentage">R: 2.2% - D: 97.8%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-e762820f4b34" class="state">
+            <div class="state-name">Idaho (4 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 96.8%;"></div>
+                <div class="blue" style="flex: 0 0 3.2%;"></div>
+                <div class="percentage">R: 96.8% - D: 3.2%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-c506aa98d74d" class="state">
+            <div class="state-name">Illinois (19 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 4.2%;"></div>
+                <div class="blue" style="flex: 0 0 95.8%;"></div>
+                <div class="percentage">R: 4.2% - D: 95.8%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-5414030a4a48" class="state">
+            <div class="state-name">Indiana (11 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 96.6%;"></div>
+                <div class="blue" style="flex: 0 0 3.4%;"></div>
+                <div class="percentage">R: 96.6% - D: 3.4%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-31c9af68dec9" class="state">
+            <div class="state-name">Iowa (6 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 93.1%;"></div>
+                <div class="blue" style="flex: 0 0 6.9%;"></div>
+                <div class="percentage">R: 93.1% - D: 6.9%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-4df471a7f5e3" class="state">
+            <div class="state-name">Kansas (6 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 96.8%;"></div>
+                <div class="blue" style="flex: 0 0 3.2%;"></div>
+                <div class="percentage">R: 96.8% - D: 3.2%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-52290675de33" class="state">
+            <div class="state-name">Kentucky (8 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 97.3%;"></div>
+                <div class="blue" style="flex: 0 0 2.7%;"></div>
+                <div class="percentage">R: 97.3% - D: 2.7%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-7047ba212e02" class="state">
+            <div class="state-name">Louisiana (8 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 95.2%;"></div>
+                <div class="blue" style="flex: 0 0 4.8%;"></div>
+                <div class="percentage">R: 95.2% - D: 4.8%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-af574b601b0f" class="state">
+            <div class="state-name">Maine-State (2 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 8.2%;"></div>
+                <div class="blue" style="flex: 0 0 91.8%;"></div>
+                <div class="percentage">R: 8.2% - D: 91.8%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-a17ba873a3c1" class="state">
+            <div class="state-name">Maine-ME-1 (1 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 2.7%;"></div>
+                <div class="blue" style="flex: 0 0 97.3%;"></div>
+                <div class="percentage">R: 2.7% - D: 97.3%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-5163ceb2f4a9" class="state">
+            <div class="state-name">Maine-ME-2 (1 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 80.4%;"></div>
+                <div class="blue" style="flex: 0 0 19.6%;"></div>
+                <div class="percentage">R: 80.4% - D: 19.6%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-e43222661719" class="state">
+            <div class="state-name">Maryland (10 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 2.9%;"></div>
+                <div class="blue" style="flex: 0 0 97.1%;"></div>
+                <div class="percentage">R: 2.9% - D: 97.1%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-dcff5d64dbc8" class="state">
+            <div class="state-name">Massachusetts (11 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 2.4%;"></div>
+                <div class="blue" style="flex: 0 0 97.6%;"></div>
+                <div class="percentage">R: 2.4% - D: 97.6%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-7e7362326c95" class="state">
+            <div class="state-name">Michigan (15 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 30.0%;"></div>
+                <div class="blue" style="flex: 0 0 70.0%;"></div>
+                <div class="percentage">R: 30.0% - D: 70.0%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-052a52f54c0e" class="state">
+            <div class="state-name">Minnesota (10 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 11.0%;"></div>
+                <div class="blue" style="flex: 0 0 89.0%;"></div>
+                <div class="percentage">R: 11.0% - D: 89.0%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-859f4dab533d" class="state">
+            <div class="state-name">Mississippi (6 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 94.1%;"></div>
+                <div class="blue" style="flex: 0 0 5.9%;"></div>
+                <div class="percentage">R: 94.1% - D: 5.9%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-1ccd026993f1" class="state">
+            <div class="state-name">Missouri (10 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 95.0%;"></div>
+                <div class="blue" style="flex: 0 0 5.0%;"></div>
+                <div class="percentage">R: 95.0% - D: 5.0%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-5406455b109d" class="state">
+            <div class="state-name">Montana (4 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 97.5%;"></div>
+                <div class="blue" style="flex: 0 0 2.5%;"></div>
+                <div class="percentage">R: 97.5% - D: 2.5%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-3c332029e300" class="state">
+            <div class="state-name">Nebraska-State (2 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 96.5%;"></div>
+                <div class="blue" style="flex: 0 0 3.5%;"></div>
+                <div class="percentage">R: 96.5% - D: 3.5%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-cf2823625bd9" class="state">
+            <div class="state-name">Nebraska-NE-1 (1 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 99.6%;"></div>
+                <div class="blue" style="flex: 0 0 0.4%;"></div>
+                <div class="percentage">R: 99.6% - D: 0.4%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-389edd65ace9" class="state">
+            <div class="state-name">Nebraska-NE-2 (1 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 18.5%;"></div>
+                <div class="blue" style="flex: 0 0 81.5%;"></div>
+                <div class="percentage">R: 18.5% - D: 81.5%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-73dbbe3d114f" class="state">
+            <div class="state-name">Nebraska-NE-3 (1 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 99.8%;"></div>
+                <div class="blue" style="flex: 0 0 0.2%;"></div>
+                <div class="percentage">R: 99.8% - D: 0.2%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-5777ea10ce2a" class="state">
+            <div class="state-name">Nevada (6 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 48.2%;"></div>
+                <div class="blue" style="flex: 0 0 51.8%;"></div>
+                <div class="percentage">R: 48.2% - D: 51.8%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-458f2140827c" class="state">
+            <div class="state-name">New Hampshire (4 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 13.1%;"></div>
+                <div class="blue" style="flex: 0 0 86.9%;"></div>
+                <div class="percentage">R: 13.1% - D: 86.9%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-96f0176fbd5a" class="state">
+            <div class="state-name">New Jersey (14 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 7.9%;"></div>
+                <div class="blue" style="flex: 0 0 92.1%;"></div>
+                <div class="percentage">R: 7.9% - D: 92.1%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-c98c13402468" class="state">
+            <div class="state-name">New Mexico (5 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 8.9%;"></div>
+                <div class="blue" style="flex: 0 0 91.1%;"></div>
+                <div class="percentage">R: 8.9% - D: 91.1%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-7c957d5b5e4c" class="state">
+            <div class="state-name">New York (28 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 2.0%;"></div>
+                <div class="blue" style="flex: 0 0 98.0%;"></div>
+                <div class="percentage">R: 2.0% - D: 98.0%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-c2b132de8821" class="state">
+            <div class="state-name">North Carolina (16 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 57.9%;"></div>
+                <div class="blue" style="flex: 0 0 42.1%;"></div>
+                <div class="percentage">R: 57.9% - D: 42.1%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-fab2b645d9d3" class="state">
+            <div class="state-name">North Dakota (3 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 94.0%;"></div>
+                <div class="blue" style="flex: 0 0 6.0%;"></div>
+                <div class="percentage">R: 94.0% - D: 6.0%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-f2f89eddc252" class="state">
+            <div class="state-name">Ohio (17 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 89.3%;"></div>
+                <div class="blue" style="flex: 0 0 10.7%;"></div>
+                <div class="percentage">R: 89.3% - D: 10.7%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-8144295e678c" class="state">
+            <div class="state-name">Oklahoma (7 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 98.0%;"></div>
+                <div class="blue" style="flex: 0 0 2.0%;"></div>
+                <div class="percentage">R: 98.0% - D: 2.0%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-c24796f7ea73" class="state">
+            <div class="state-name">Oregon (8 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 4.1%;"></div>
+                <div class="blue" style="flex: 0 0 95.9%;"></div>
+                <div class="percentage">R: 4.1% - D: 95.9%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside" class="state">
+            <div class="state-name">Pennsylvania (19 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 48.1%;"></div>
+                <div class="blue" style="flex: 0 0 51.9%;"></div>
+                <div class="percentage">R: 48.1% - D: 51.9%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-f7998626f959" class="state">
+            <div class="state-name">Rhode Island (4 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 2.7%;"></div>
+                <div class="blue" style="flex: 0 0 97.3%;"></div>
+                <div class="percentage">R: 2.7% - D: 97.3%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-f0e933a475d1" class="state">
+            <div class="state-name">South Carolina (9 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 93.0%;"></div>
+                <div class="blue" style="flex: 0 0 7.0%;"></div>
+                <div class="percentage">R: 93.0% - D: 7.0%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-bc361a1e7ca0" class="state">
+            <div class="state-name">South Dakota (3 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 97.2%;"></div>
+                <div class="blue" style="flex: 0 0 2.8%;"></div>
+                <div class="percentage">R: 97.2% - D: 2.8%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-a870c481a5ce" class="state">
+            <div class="state-name">Tennessee (11 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 97.1%;"></div>
+                <div class="blue" style="flex: 0 0 2.9%;"></div>
+                <div class="percentage">R: 97.1% - D: 2.9%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-2ad2e0596c59" class="state">
+            <div class="state-name">Texas (40 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 88.9%;"></div>
+                <div class="blue" style="flex: 0 0 11.1%;"></div>
+                <div class="percentage">R: 88.9% - D: 11.1%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-9cd88c5b9389" class="state">
+            <div class="state-name">Utah (6 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 98.5%;"></div>
+                <div class="blue" style="flex: 0 0 1.5%;"></div>
+                <div class="percentage">R: 98.5% - D: 1.5%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-7b9db14c6562" class="state">
+            <div class="state-name">Vermont (3 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 2.0%;"></div>
+                <div class="blue" style="flex: 0 0 98.0%;"></div>
+                <div class="percentage">R: 2.0% - D: 98.0%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-6db80c968e21" class="state">
+            <div class="state-name">Virginia (13 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 11.6%;"></div>
+                <div class="blue" style="flex: 0 0 88.4%;"></div>
+                <div class="percentage">R: 11.6% - D: 88.4%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-8b4af904766d" class="state">
+            <div class="state-name">Washington (12 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 1.6%;"></div>
+                <div class="blue" style="flex: 0 0 98.4%;"></div>
+                <div class="percentage">R: 1.6% - D: 98.4%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-3ffb4d1203a0" class="state">
+            <div class="state-name">West Virginia (4 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 95.7%;"></div>
+                <div class="blue" style="flex: 0 0 4.3%;"></div>
+                <div class="percentage">R: 95.7% - D: 4.3%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-ee07598f45ea" class="state">
+            <div class="state-name">Wisconsin (10 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 41.0%;"></div>
+                <div class="blue" style="flex: 0 0 59.0%;"></div>
+                <div class="percentage">R: 41.0% - D: 59.0%</div>
+            </div>
+        </a>
+        
+        <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-686f75d3998e" class="state">
+            <div class="state-name">Wyoming (3 EV)</div>
+            <div class="state-bar">
+                <div class="red" style="flex: 0 0 96.9%;"></div>
+                <div class="blue" style="flex: 0 0 3.1%;"></div>
+                <div class="percentage">R: 96.9% - D: 3.1%</div>
+            </div>
+        </a>
+        
+    </div>
+
+    <!-- Total EV -->
+    <div class="ev-total">Total EV: 538</div>
+</body>
+</html>
