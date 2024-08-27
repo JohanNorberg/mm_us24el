@@ -366,7 +366,8 @@ if __name__ == '__main__':
                                     total_ev=total_ev)
 
     # Save the rendered HTML to a file
-    with open('output.html', 'w') as f:
+    with open('index.html', 'w') as f:
+
         f.write(rendered_html)
 
-    print("HTML site generated and saved as 'output.html'")
+    print("HTML site generated and saved as 'index.html'")
