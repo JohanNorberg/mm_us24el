@@ -1,19 +1,84 @@
-import requests
 import random
-
 from datetime import datetime
 
 import diskcache as dc
-from jinja2 import Environment, FileSystemLoader
-
 import markdown
+import requests
+from jinja2 import Environment, FileSystemLoader
 
 # Initialize a cache with a specific directory
 cache = dc.Cache('./cache')
 
 markets = []
+state_pairs = []
 
 simulations=100_000
+
+
+def get_state_long_name(short_name):
+    state_map = {
+        'AL': 'Alabama',
+        'AK': 'Alaska',
+        'AZ': 'Arizona',
+        'AR': 'Arkansas',
+        'CA': 'California',
+        'CO': 'Colorado',
+        'CT': 'Connecticut',
+        'DE': 'Delaware',
+        'DC': 'District of Columbia',
+        'FL': 'Florida',
+        'GA': 'Georgia',
+        'HI': 'Hawaii',
+        'ID': 'Idaho',
+        'IL': 'Illinois',
+        'IN': 'Indiana',
+        'IA': 'Iowa',
+        'KS': 'Kansas',
+        'KY': 'Kentucky',
+        'LA': 'Louisiana',
+        'ME': 'Maine-State',
+        'ME-1': 'Maine-ME-1',
+        'ME-2': 'Maine-ME-2',
+        'MD': 'Maryland',
+        'MA': 'Massachusetts',
+        'MI': 'Michigan',
+        'MN': 'Minnesota',
+        'MS': 'Mississippi',
+        'MO': 'Missouri',
+        'MT': 'Montana',
+        'NE': 'Nebraska-State',
+        'NE-1': 'Nebraska-NE-1',
+        'NE-2': 'Nebraska-NE-2',
+        'NE-3': 'Nebraska-NE-3',
+        'NV': 'Nevada',
+        'NH': 'New Hampshire',
+        'NJ': 'New Jersey',
+        'NM': 'New Mexico',
+        'NY': 'New York',
+        'NC': 'North Carolina',
+        'ND': 'North Dakota',
+        'OH': 'Ohio',
+        'OK': 'Oklahoma',
+        'OR': 'Oregon',
+        'PA': 'Pennsylvania',
+        'RI': 'Rhode Island',
+        'SC': 'South Carolina',
+        'SD': 'South Dakota',
+        'TN': 'Tennessee',
+        'TX': 'Texas',
+        'UT': 'Utah',
+        'VT': 'Vermont',
+        'VA': 'Virginia',
+        'WA': 'Washington',
+        'WV': 'West Virginia',
+        'WI': 'Wisconsin',
+        'WY': 'Wyoming'
+    }
+
+    if short_name not in state_map:
+        raise KeyError(f"State abbreviation '{short_name}' not found.")
+
+    return state_map[short_name]
 
 def adjust_odds(x, amount=0.1):
     return max(0, min(1, ((x - 0.5) / (1.0 - amount)) + 0.5))
@@ -61,6 +126,104 @@ def simulate_elections():
         })
 
     return results
+
+
+def simulate_elections_with_pairs():
+    """Simulate elections multiple times with state pairs considered."""
+    results = []
+
+    for _ in range(simulations):
+        democrat_votes_sim = 0
+        republican_votes_sim = 0
+        democrat_states_sim = []
+        republican_states_sim = []
+
+        # Keep track of the states that have already been decided
+        decided_states = set()
+
+        # Shuffle state pairs for randomness
+        random.shuffle(state_pairs)
+
+        states_d_win = {}
+
+
+        for pair in state_pairs:
+            state1 = get_state_long_name(pair['states1'])
+            state2 = get_state_long_name(pair['states2'])
+            probability_same = pair['probability'] # the probability they are the same
+
+
+            if random.random() < 0.5:
+                tmp = state1
+                state1 = state2
+                state2 = tmp
+
+            if state1 in decided_states and state2 in decided_states:
+                continue # Skip if both states have already been decided
+
+            if state1 in decided_states:
+                if random.random() < probability_same:
+                    states_d_win[state2] = states_d_win[state1]
+                else:
+                    states_d_win[state2] = not states_d_win[state1]
+
+                decided_states.add(state2)
+                continue
+
+            if state2 in decided_states:
+                if random.random() < probability_same:
+                    states_d_win[state1] = states_d_win[state2]
+                else:
+                    states_d_win[state1] = not states_d_win[state2]
+
+                decided_states.add(state1)
+                continue
+
+            # Neither has been decided. Check if state1 is democrat win, and then decide state2 based on probability_same
+
+            state1_market_democrat_probability = markets[[market['name'] for market in markets].index(state1)]['democrat_probability']
+
+            if random.random() < state1_market_democrat_probability:
+                states_d_win[state1] = True
+            else:
+                states_d_win[state1] = False
+
+            if random.random() < probability_same:
+                states_d_win[state2] = states_d_win[state1]
+            else:
+                states_d_win[state2] = not states_d_win[state1]
+
+            decided_states.add(state1)
+            decided_states.add(state2)
+
+        for state in states_d_win:
+            if states_d_win[state]:
+                democrat_votes_sim += markets[[market['name'] for market in markets].index(state)]['votes']
+                democrat_states_sim.append(state)
+            else:
+                republican_votes_sim += markets[[market['name'] for market in markets].index(state)]['votes']
+                republican_states_sim.append(state)
+
+        # Then add the remaining states
+
+        for market in markets:
+            if market['name'] not in decided_states:
+                if random.random() < market['democrat_probability']:
+                    democrat_votes_sim += market['votes']
+                    democrat_states_sim.append(market['name'])
+                else:
+                    republican_votes_sim += market['votes']
+                    republican_states_sim.append(market['name'])
+
+        results.append({
+            'democrat_votes_simulation': democrat_votes_sim,
+            'republican_votes_simulation': republican_votes_sim,
+            'democrat_states_simulation': democrat_states_sim,
+            'republican_states_simulation': republican_states_sim
+        })
+
+    return results
+
 
 def simulate_elections_adjusted():
     results = []
@@ -130,6 +293,15 @@ def calculate_odds():
         simulation_results_adjusted)
     median_result_adjusted = get_median_results(simulation_results_adjusted)
 
+    simulation_results_with_pairs = simulate_elections_with_pairs()
+
+    democrat_wins_with_pairs, republican_wins_with_pairs, democrat_prob_with_pairs, republican_prob_with_pairs = calculate_probabilities(
+        simulation_results_with_pairs)
+    median_result_with_pairs = get_median_results(simulation_results_with_pairs)
+
+    print(democrat_wins_with_pairs, republican_wins_with_pairs, democrat_prob_with_pairs, republican_prob_with_pairs)
+
+
     return {
         'simple': {
             'democrat_votes': democrat_votes,
@@ -156,9 +328,54 @@ def calculate_odds():
             'republican_states_median': median_result_adjusted['republican_states_simulation'],
             'democrat_probability': democrat_prob_adjusted,
             'republican_probability': republican_prob_adjusted
+        },
+        'simulation_with_pairs': {
+            'democrat_wins': democrat_wins_with_pairs,
+            'republican_wins': republican_wins_with_pairs,
+            'democrat_votes_median': median_result_with_pairs['democrat_votes_simulation'],
+            'republican_votes_median': median_result_with_pairs['republican_votes_simulation'],
+            'democrat_states_median': median_result_with_pairs['democrat_states_simulation'],
+            'republican_states_median': median_result_with_pairs['republican_states_simulation'],
+            'democrat_probability': democrat_prob_with_pairs,
+            'republican_probability': republican_prob_with_pairs
         }
     }
 
+
+@cache.memoize(expire=1800)
+def get_correlation_odds():
+    url = 'https://manifold.markets/EvanDaniel/pairwise-state-results-which-pairs'
+    slug = url.split('/')[-1]
+    url = f'https://api.manifold.markets/v0/slug/{slug}'
+    r = requests.get(url)
+
+    if r.status_code != 200:
+        print('Error getting correlation odds', r.status_code)
+        raise Exception('Error getting correlation odds')
+
+    correlation_odds = r.json()
+
+    print('correlation', correlation_odds)
+
+    return correlation_odds
+
+
+
+def register_correlations():
+    correlation_odds = get_correlation_odds()
+
+    for pair in correlation_odds['answers']:
+        text = pair['text']
+
+        states = text.split(' and ')
+        state1 = states[0]
+        state2 = states[1]
+
+        state_pairs.append({
+            'states1': state1,
+            'states2': state2,
+            'probability': pair['probability']
+        })
 
 @cache.memoize(expire=1800)
 def get_market_odds(name, votes, manifold_markets_url):
@@ -222,6 +439,8 @@ def register_market(name, votes, manifold_markets_url):
 
 
 def register_markets():
+
+
     register_market('Alabama', 9,
                     'https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-98654274ab42')
     register_market('Alaska', 3,
@@ -337,6 +556,7 @@ def register_markets():
 
 if __name__ == '__main__':
     register_markets()
+    register_correlations()
     odds_data = calculate_odds()
 
     # Load the Jinja2 template from the file
@@ -392,6 +612,20 @@ if __name__ == '__main__':
             'republican_states_median': odds_data['simulation_adjusted']['republican_states_median'],
             'democrat_probability': round(odds_data['simulation_adjusted']['democrat_probability'] * 100),
             'republican_probability': round(odds_data['simulation_adjusted']['republican_probability'] * 100)
+        },
+        'simulation_with_pairs': {
+            'democrat_wins': odds_data['simulation_with_pairs']['democrat_wins'],
+            'republican_wins': odds_data['simulation_with_pairs']['republican_wins'],
+            'democrat_votes_median': odds_data['simulation_with_pairs']['democrat_votes_median'],
+            'republican_votes_median': odds_data['simulation_with_pairs']['republican_votes_median'],
+            'democrat_votes_median_percent': round(
+                (odds_data['simulation_with_pairs']['democrat_votes_median'] / total_ev) * 100),
+            'republican_votes_median_percent': round(
+                (odds_data['simulation_with_pairs']['republican_votes_median'] / total_ev) * 100),
+            'democrat_states_median': odds_data['simulation_with_pairs']['democrat_states_median'],
+            'republican_states_median': odds_data['simulation_with_pairs']['republican_states_median'],
+            'democrat_probability': round(odds_data['simulation_with_pairs']['democrat_probability'] * 100),
+            'republican_probability': round(odds_data['simulation_with_pairs']['republican_probability'] * 100)
         }
     }
 
@@ -406,6 +640,7 @@ if __name__ == '__main__':
     rendered_html = template.render(simple=mapped_odds_data['simple'],
                                     simulation=mapped_odds_data['simulation'],
                                     simulation_adjusted=mapped_odds_data['simulation_adjusted'],
+                                    simulation_with_pairs=mapped_odds_data['simulation_with_pairs'],
                                     states=mapped_states,
                                     total_ev=total_ev,
                                     timestamp=current_time_utc,

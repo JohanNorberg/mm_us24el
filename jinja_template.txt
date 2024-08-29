@@ -197,6 +197,20 @@
         </div>
     </div>
 
+    <div class="section">
+        <h2>Adjusted for State Correlation - Monte Carlo Simulation Result</h2>
+        <div class="bar-container">
+            <div class="blue" style="flex: 0 0 {{ simulation_with_pairs.democrat_probability }}%;"></div>
+            <div class="red" style="flex: 0 0 {{ simulation_with_pairs.republican_probability }}%;"></div>
+            <div class="percentage">D: {{ simulation_with_pairs.democrat_probability }}% - R: {{ simulation_with_pairs.republican_probability }}%</div>
+        </div>
+        <div class="bar-container">
+            <div class="blue" style="flex: 0 0 {{ simulation_with_pairs.democrat_votes_median_percent }}%;"></div>
+            <div class="red" style="flex: 0 0 {{ simulation_with_pairs.republican_votes_median_percent }}%;"></div>
+            <div class="percentage">D: {{ simulation_with_pairs.democrat_votes_median }} - R: {{ simulation_with_pairs.republican_votes_median }}</div>
+        </div>
+    </div>
+
     <div class="container">
         <!-- Loop through states -->
         {% for state in states %}
