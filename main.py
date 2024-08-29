@@ -6,12 +6,15 @@ from datetime import datetime
 import diskcache as dc
 from jinja2 import Environment, FileSystemLoader
 
+import markdown
+
 # Initialize a cache with a specific directory
 cache = dc.Cache('./cache')
 
 markets = []
 
-
+def adjust_odds(x, amount=0.1):
+    return max(0, min(1, ((x - 0.5) / (1.0 - amount)) + 0.5))
 
 def calculate_odds(simulations=100_000):
     def get_initial_votes():
@@ -77,7 +80,7 @@ def calculate_odds(simulations=100_000):
                 elif democrat_probability > 0.75:
                     democrat_probability = 1
 
-                if random.random() < market['democrat_probability']:
+                if random.random() < democrat_probability:
                     democrat_votes_sim += market['votes']
                     democrat_states_sim.append(market['name'])
                 else:
@@ -109,30 +112,11 @@ def calculate_odds(simulations=100_000):
 
     # Step 1: Calculate initial votes based on probabilities
     democrat_votes, republican_votes, democrat_states, republican_states = get_initial_votes()
-
-    # Print initial calculations
-    print('Democrat votes:', democrat_votes)
-    print('Republican votes:', republican_votes)
-    print('Democrat states:', democrat_states)
-    print('Republican states:', republican_states)
-
-    # Step 2: Simulate elections
-    print("Let's simulate the election", simulations, "times")
     simulation_results = simulate_elections()
 
     # Step 3: Calculate probabilities and median results
     democrat_wins, republican_wins, democrat_prob, republican_prob = calculate_probabilities(simulation_results)
     median_result = get_median_results(simulation_results)
-
-    # Print results
-    print('Democrat wins:', democrat_wins)
-    print('Republican wins:', republican_wins)
-    print('Democrat votes median:', median_result['democrat_votes_simulation'])
-    print('Republican votes median:', median_result['republican_votes_simulation'])
-    print('Democrat states median:', median_result['democrat_states_simulation'])
-    print('Republican states median:', median_result['republican_states_simulation'])
-    print('Democrat probability:', democrat_prob)
-    print('Republican probability:', republican_prob)
 
     # Step 4: Simulate elections with adjusted probabilities
     simulation_results_adjusted = simulate_elections_adjusted()
@@ -141,16 +125,6 @@ def calculate_odds(simulations=100_000):
     democrat_wins_adjusted, republican_wins_adjusted, democrat_prob_adjusted, republican_prob_adjusted = calculate_probabilities(
         simulation_results_adjusted)
     median_result_adjusted = get_median_results(simulation_results_adjusted)
-
-    # Print results for adjusted probabilities
-    print('Democrat wins (adjusted):', democrat_wins_adjusted)
-    print('Republican wins (adjusted):', republican_wins_adjusted)
-    print('Democrat votes median (adjusted):', median_result_adjusted['democrat_votes_simulation'])
-    print('Republican votes median (adjusted):', median_result_adjusted['republican_votes_simulation'])
-    print('Democrat states median (adjusted):', median_result_adjusted['democrat_states_simulation'])
-    print('Republican states median (adjusted):', median_result_adjusted['republican_states_simulation'])
-    print('Democrat probability (adjusted):', democrat_prob_adjusted)
-    print('Republican probability (adjusted):', republican_prob_adjusted)
 
     return {
         'simple': {
@@ -420,12 +394,18 @@ if __name__ == '__main__':
     # Get the current UTC time and format it as a readable string
     current_time_utc = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
 
+    with open("README.md", "r") as f:
+        readme = f.read()
+
+    readme_html = markdown.markdown(readme)
+
     rendered_html = template.render(simple=mapped_odds_data['simple'],
                                     simulation=mapped_odds_data['simulation'],
                                     simulation_adjusted=mapped_odds_data['simulation_adjusted'],
                                     states=mapped_states,
                                     total_ev=total_ev,
-                                    timestamp=current_time_utc)
+                                    timestamp=current_time_utc,
+                                    readme_html=readme_html)
 
     # Save the rendered HTML to a file
     with open('index.html', 'w') as f:

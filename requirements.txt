@@ -1,3 +1,4 @@
 diskcache==5.6.3
 Jinja2==3.1.4
-requests==2.25.1
+requests==2.31.0
+markdown==3.3.6

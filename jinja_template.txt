@@ -142,6 +142,15 @@
             text-align: center;
         }
 
+        .readme {
+            margin-top: 20px;
+            background-color: #34495e;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
@@ -204,5 +213,8 @@
 
     <!-- Total EV -->
     <div class="ev-total">Total EV: {{ total_ev }}</div>
+    <div class="readme">
+        {{ readme_html | safe }}
+    </div>
 </body>
 </html>
