@@ -13,102 +13,106 @@ cache = dc.Cache('./cache')
 
 markets = []
 
+simulations=100_000
+
 def adjust_odds(x, amount=0.1):
     return max(0, min(1, ((x - 0.5) / (1.0 - amount)) + 0.5))
 
-def calculate_odds(simulations=100_000):
-    def get_initial_votes():
-        """Calculate initial vote counts based on probabilities."""
-        democrat_votes = 0
-        republican_votes = 0
-        democrat_states = []
-        republican_states = []
+def get_initial_votes():
+    """Calculate initial vote counts based on probabilities."""
+    democrat_votes = 0
+    republican_votes = 0
+    democrat_states = []
+    republican_states = []
+
+    for market in markets:
+        if market['democrat_probability'] > market['republican_probability']:
+            democrat_votes += market['votes']
+            democrat_states.append(market['name'])
+        else:
+            republican_votes += market['votes']
+            republican_states.append(market['name'])
+
+    return democrat_votes, republican_votes, democrat_states, republican_states
+
+def simulate_elections():
+    """Simulate elections multiple times and collect results."""
+    results = []
+
+    for _ in range(simulations):
+        democrat_votes_sim = 0
+        republican_votes_sim = 0
+        democrat_states_sim = []
+        republican_states_sim = []
 
         for market in markets:
-            if market['democrat_probability'] > market['republican_probability']:
-                democrat_votes += market['votes']
-                democrat_states.append(market['name'])
+            if random.random() < market['democrat_probability']:
+                democrat_votes_sim += market['votes']
+                democrat_states_sim.append(market['name'])
             else:
-                republican_votes += market['votes']
-                republican_states.append(market['name'])
+                republican_votes_sim += market['votes']
+                republican_states_sim.append(market['name'])
 
-        return democrat_votes, republican_votes, democrat_states, republican_states
+        results.append({
+            'democrat_votes_simulation': democrat_votes_sim,
+            'republican_votes_simulation': republican_votes_sim,
+            'democrat_states_simulation': democrat_states_sim,
+            'republican_states_simulation': republican_states_sim
+        })
 
-    def simulate_elections():
-        """Simulate elections multiple times and collect results."""
-        results = []
+    return results
 
-        for _ in range(simulations):
-            democrat_votes_sim = 0
-            republican_votes_sim = 0
-            democrat_states_sim = []
-            republican_states_sim = []
+def simulate_elections_adjusted():
+    results = []
 
-            for market in markets:
-                if random.random() < market['democrat_probability']:
-                    democrat_votes_sim += market['votes']
-                    democrat_states_sim.append(market['name'])
-                else:
-                    republican_votes_sim += market['votes']
-                    republican_states_sim.append(market['name'])
+    for _ in range(simulations):
+        democrat_votes_sim = 0
+        republican_votes_sim = 0
+        democrat_states_sim = []
+        republican_states_sim = []
 
-            results.append({
-                'democrat_votes_simulation': democrat_votes_sim,
-                'republican_votes_simulation': republican_votes_sim,
-                'democrat_states_simulation': democrat_states_sim,
-                'republican_states_simulation': republican_states_sim
-            })
+        for market in markets:
 
-        return results
+            # Adjust probabilities so anything below 0.25 is 0 and above 0.75 is 1
+            democrat_probability = market['democrat_probability']
 
-    def simulate_elections_adjusted():
-        results = []
+            if democrat_probability < 0.25:
+                democrat_probability = 0
+            elif democrat_probability > 0.75:
+                democrat_probability = 1
 
-        for _ in range(simulations):
-            democrat_votes_sim = 0
-            republican_votes_sim = 0
-            democrat_states_sim = []
-            republican_states_sim = []
+            if random.random() < democrat_probability:
+                democrat_votes_sim += market['votes']
+                democrat_states_sim.append(market['name'])
+            else:
+                republican_votes_sim += market['votes']
+                republican_states_sim.append(market['name'])
 
-            for market in markets:
+        results.append({
+            'democrat_votes_simulation': democrat_votes_sim,
+            'republican_votes_simulation': republican_votes_sim,
+            'democrat_states_simulation': democrat_states_sim,
+            'republican_states_simulation': republican_states_sim
+        })
 
-                # Adjust probabilities so anything below 0.25 is 0 and above 0.75 is 1
-                democrat_probability = market['democrat_probability']
+    return results
 
-                if democrat_probability < 0.25:
-                    democrat_probability = 0
-                elif democrat_probability > 0.75:
-                    democrat_probability = 1
+def calculate_probabilities(results):
+    """Calculate the number of wins and probabilities."""
+    democrat_wins = sum(
+        1 for result in results if result['democrat_votes_simulation'] > result['republican_votes_simulation'])
+    republican_wins = simulations - democrat_wins
 
-                if random.random() < democrat_probability:
-                    democrat_votes_sim += market['votes']
-                    democrat_states_sim.append(market['name'])
-                else:
-                    republican_votes_sim += market['votes']
-                    republican_states_sim.append(market['name'])
+    return democrat_wins, republican_wins, democrat_wins / simulations, republican_wins / simulations
 
-            results.append({
-                'democrat_votes_simulation': democrat_votes_sim,
-                'republican_votes_simulation': republican_votes_sim,
-                'democrat_states_simulation': democrat_states_sim,
-                'republican_states_simulation': republican_states_sim
-            })
+def get_median_results(results):
+    """Get the median votes and states from simulations."""
+    results_sorted = sorted(results, key=lambda x: x['democrat_votes_simulation'])
+    median_result = results_sorted[len(results_sorted) // 2]
+    return median_result
 
-        return results
+def calculate_odds():
 
-    def calculate_probabilities(results):
-        """Calculate the number of wins and probabilities."""
-        democrat_wins = sum(
-            1 for result in results if result['democrat_votes_simulation'] > result['republican_votes_simulation'])
-        republican_wins = simulations - democrat_wins
-
-        return democrat_wins, republican_wins, democrat_wins / simulations, republican_wins / simulations
-
-    def get_median_results(results):
-        """Get the median votes and states from simulations."""
-        results_sorted = sorted(results, key=lambda x: x['democrat_votes_simulation'])
-        median_result = results_sorted[len(results_sorted) // 2]
-        return median_result
 
     # Step 1: Calculate initial votes based on probabilities
     democrat_votes, republican_votes, democrat_states, republican_states = get_initial_votes()

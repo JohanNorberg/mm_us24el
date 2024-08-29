@@ -27,3 +27,7 @@ def transform(x):
     return max(0, min(1, ((x - 0.5) / 0.9) + 0.5))
 ```
 
+## Reference
+
+Github: https://github.com/JohanNorberg/mm_us24el
+Website: https://johannorberg.github.io/mm_us24el/
