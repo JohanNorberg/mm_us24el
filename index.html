@@ -157,7 +157,7 @@
     <h1>Manifold Markets Simulation</h1>
     <div class="description">
         <br>Collecting Manifold Markets odds for US 2024 Presidential Elections
-        <br>Build time: 2024-08-29 20:03:19 UTC
+        <br>Build time: 2024-08-29 20:31:04 UTC
     </div>
 
     <div class="section">
@@ -194,6 +194,20 @@
             <div class="blue" style="flex: 0 0 51%;"></div>
             <div class="red" style="flex: 0 0 49%;"></div>
             <div class="percentage">D: 274 - R: 264</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Adjusted for State Correlation - Monte Carlo Simulation Result</h2>
+        <div class="bar-container">
+            <div class="blue" style="flex: 0 0 68%;"></div>
+            <div class="red" style="flex: 0 0 32%;"></div>
+            <div class="percentage">D: 68% - R: 32%</div>
+        </div>
+        <div class="bar-container">
+            <div class="blue" style="flex: 0 0 54%;"></div>
+            <div class="red" style="flex: 0 0 46%;"></div>
+            <div class="percentage">D: 288 - R: 250</div>
         </div>
     </div>
 
@@ -419,9 +433,9 @@
         <a href="https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-7e7362326c95" class="state">
             <div class="state-name">Michigan (15 EV)</div>
             <div class="state-bar">
-                <div class="red" style="flex: 0 0 35.1%;"></div>
-                <div class="blue" style="flex: 0 0 64.9%;"></div>
-                <div class="percentage">R: 35.1% - D: 64.9%</div>
+                <div class="red" style="flex: 0 0 35.0%;"></div>
+                <div class="blue" style="flex: 0 0 65.0%;"></div>
+                <div class="percentage">R: 35.0% - D: 65.0%</div>
             </div>
         </a>
         
@@ -718,7 +732,7 @@
 <p>Runs 100,000 simulations of the election, and shows the percentage won and distribution of EVs for each party.</p>
 <h2>Adjusted Monte Carlo Simulation</h2>
 <p>Same as Monte Carlo except it moves &lt;25% to 0% and &gt;75% to 100%. For example this gives Texas (https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-2ad2e0596c59) 100% to Republicans.</p>
-<h2>TODO: Adjusted with Correlations Monte Carlo Simulation</h2>
+<h2>Adjusted with Correlations Monte Carlo Simulation</h2>
 <p>Uses https://manifold.markets/EvanDaniel/pairwise-state-results-which-pairs to adjust the Monte Carlo simulation based on correlations between states.</p>
 <p>It gives everything below 5% to 0% and above 95% to 100%, using scaling:</p>
 <p><code>def transform(x):
