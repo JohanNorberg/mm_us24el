@@ -12,11 +12,9 @@ cache = dc.Cache('./cache')
 markets = []
 state_pairs = []
 
-simulations=100_000
+simulations=200_000
 
-
-def get_state_long_name(short_name):
-    state_map = {
+state_map = {
         'AL': 'Alabama',
         'AK': 'Alaska',
         'AZ': 'Arizona',
@@ -75,13 +73,33 @@ def get_state_long_name(short_name):
         'WY': 'Wyoming'
     }
 
+inverse_state_map = {v: k for k, v in state_map.items()}
+
+def get_state_long_name(short_name):
+
     if short_name not in state_map:
         raise KeyError(f"State abbreviation '{short_name}' not found.")
 
     return state_map[short_name]
 
-def adjust_odds(x, amount=0.1):
-    return max(0, min(1, ((x - 0.5) / (1.0 - amount)) + 0.5))
+def get_state_short_name(long_name):
+
+    if long_name not in inverse_state_map:
+        raise KeyError(f"State '{long_name}' not found.")
+
+    return inverse_state_map[long_name]
+
+def adjust_odds(x):
+
+    if x < 0.25:
+        return 0
+    elif x > 0.75:
+        return 1
+    else:
+        return x
+
+    #amount = 0.1
+    #return max(0, min(1, ((x - 0.5) / (1.0 - amount)) + 0.5))
 
 def get_initial_votes():
     """Calculate initial vote counts based on probabilities."""
@@ -150,7 +168,7 @@ def simulate_elections_with_pairs():
         for pair in state_pairs:
             state1 = get_state_long_name(pair['states1'])
             state2 = get_state_long_name(pair['states2'])
-            probability_same = pair['probability'] # the probability they are the same
+            probability_same = adjust_odds(pair['probability']) # the probability they are the same
 
 
             if random.random() < 0.5:
@@ -181,7 +199,7 @@ def simulate_elections_with_pairs():
 
             # Neither has been decided. Check if state1 is democrat win, and then decide state2 based on probability_same
 
-            state1_market_democrat_probability = markets[[market['name'] for market in markets].index(state1)]['democrat_probability']
+            state1_market_democrat_probability = adjust_odds(markets[[market['name'] for market in markets].index(state1)]['democrat_probability'])
 
             if random.random() < state1_market_democrat_probability:
                 states_d_win[state1] = True
@@ -208,7 +226,7 @@ def simulate_elections_with_pairs():
 
         for market in markets:
             if market['name'] not in decided_states:
-                if random.random() < market['democrat_probability']:
+                if random.random() < adjust_odds(market['democrat_probability']):
                     democrat_votes_sim += market['votes']
                     democrat_states_sim.append(market['name'])
                 else:
@@ -554,6 +572,9 @@ def register_markets():
                     'https://manifold.markets/ManifoldPolitics/which-party-will-win-the-us-preside-686f75d3998e')
 
 
+def a_to_s(state_names):
+    return ', '.join(state_names[:-1]) + ' and ' + state_names[-1]
+
 if __name__ == '__main__':
     register_markets()
     register_correlations()
@@ -583,8 +604,8 @@ if __name__ == '__main__':
             'republican_votes': odds_data['simple']['republican_votes'],
             'democrat_percentage': round((odds_data['simple']['democrat_votes'] / total_ev) * 100),
             'republican_percentage': round((odds_data['simple']['republican_votes'] / total_ev) * 100),
-            'democrat_states': odds_data['simple']['democrat_states'],
-            'republican_states': odds_data['simple']['republican_states']
+            'democrat_states': a_to_s(list(map(get_state_short_name, odds_data['simple']['democrat_states']))),
+            'republican_states': a_to_s(list(map(get_state_short_name, odds_data['simple']['republican_states'])))
         },
         'simulation': {
             'democrat_wins': odds_data['simulation']['democrat_wins'],
@@ -594,8 +615,8 @@ if __name__ == '__main__':
             'democrat_votes_median_percent': round((odds_data['simulation']['democrat_votes_median'] / total_ev) * 100),
             'republican_votes_median_percent': round(
                 (odds_data['simulation']['republican_votes_median'] / total_ev) * 100),
-            'democrat_states_median': odds_data['simulation']['democrat_states_median'],
-            'republican_states_median': odds_data['simulation']['republican_states_median'],
+            'democrat_states': a_to_s(list(map(get_state_short_name, odds_data['simulation']['democrat_states_median']))),
+            'republican_states': a_to_s(list(map(get_state_short_name, odds_data['simulation']['republican_states_median']))),
             'democrat_probability': round(odds_data['simulation']['democrat_probability'] * 100),
             'republican_probability': round(odds_data['simulation']['republican_probability'] * 100)
         },
@@ -608,8 +629,8 @@ if __name__ == '__main__':
                 (odds_data['simulation_adjusted']['democrat_votes_median'] / total_ev) * 100),
             'republican_votes_median_percent': round(
                 (odds_data['simulation_adjusted']['republican_votes_median'] / total_ev) * 100),
-            'democrat_states_median': odds_data['simulation_adjusted']['democrat_states_median'],
-            'republican_states_median': odds_data['simulation_adjusted']['republican_states_median'],
+            'democrat_states': a_to_s(list(map(get_state_short_name, odds_data['simulation_adjusted']['democrat_states_median']))),
+            'republican_states': a_to_s(list(map(get_state_short_name, odds_data['simulation_adjusted']['republican_states_median']))),
             'democrat_probability': round(odds_data['simulation_adjusted']['democrat_probability'] * 100),
             'republican_probability': round(odds_data['simulation_adjusted']['republican_probability'] * 100)
         },
@@ -622,8 +643,8 @@ if __name__ == '__main__':
                 (odds_data['simulation_with_pairs']['democrat_votes_median'] / total_ev) * 100),
             'republican_votes_median_percent': round(
                 (odds_data['simulation_with_pairs']['republican_votes_median'] / total_ev) * 100),
-            'democrat_states_median': odds_data['simulation_with_pairs']['democrat_states_median'],
-            'republican_states_median': odds_data['simulation_with_pairs']['republican_states_median'],
+            'democrat_states': a_to_s(list(map(get_state_short_name, odds_data['simulation_with_pairs']['democrat_states_median']))),
+            'republican_states': a_to_s(list(map(get_state_short_name, odds_data['simulation_with_pairs']['republican_states_median']))),
             'democrat_probability': round(odds_data['simulation_with_pairs']['democrat_probability'] * 100),
             'republican_probability': round(odds_data['simulation_with_pairs']['republican_probability'] * 100)
         }

@@ -167,6 +167,10 @@
             <div class="red" style="flex: 0 0 {{ simple.republican_percentage }}%;"></div>
             <div class="percentage">D: {{ simple.democrat_votes }} - R: {{ simple.republican_votes }}</div>
         </div>
+
+        <h4>Democrat states: {{ simple.democrat_states }}</h4>
+        <h4>Republican states: {{ simple.republican_states }}</h4>
+
     </div>
 
     <div class="section">
@@ -181,6 +185,9 @@
             <div class="red" style="flex: 0 0 {{ simulation.republican_votes_median_percent }}%;"></div>
             <div class="percentage">D: {{ simulation.democrat_votes_median }} - R: {{ simulation.republican_votes_median }}</div>
         </div>
+
+        <h4>Democrat states: {{ simulation.democrat_states }}</h4>
+        <h4>Republican states: {{ simulation.republican_states }}</h4>
     </div>
 
     <div class="section">
@@ -195,6 +202,10 @@
             <div class="red" style="flex: 0 0 {{ simulation_adjusted.republican_votes_median_percent }}%;"></div>
             <div class="percentage">D: {{ simulation_adjusted.democrat_votes_median }} - R: {{ simulation_adjusted.republican_votes_median }}</div>
         </div>
+
+        <h4>Democrat states: {{ simulation_adjusted.democrat_states }}</h4>
+        <h4>Republican states: {{ simulation_adjusted.republican_states }}</h4>
+
     </div>
 
     <div class="section">
@@ -209,6 +220,10 @@
             <div class="red" style="flex: 0 0 {{ simulation_with_pairs.republican_votes_median_percent }}%;"></div>
             <div class="percentage">D: {{ simulation_with_pairs.democrat_votes_median }} - R: {{ simulation_with_pairs.republican_votes_median }}</div>
         </div>
+
+        <h4>Democrat states: {{ simulation_with_pairs.democrat_states }}</h4>
+        <h4>Republican states: {{ simulation_with_pairs.republican_states }}</h4>
+
     </div>
 
     <div class="container">

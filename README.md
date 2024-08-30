@@ -20,11 +20,17 @@ Same as Monte Carlo except it moves <25% to 0% and >75% to 100%. For example thi
 
 Uses https://manifold.markets/EvanDaniel/pairwise-state-results-which-pairs to adjust the Monte Carlo simulation based on correlations between states.
 
-It gives everything below 5% to 0% and above 95% to 100%, using scaling:
+Adjusted odds
 
 ```
-def transform(x):
-    return max(0, min(1, ((x - 0.5) / 0.9) + 0.5))
+def adjust_odds(x):
+
+    if x < 0.25:
+        return 0
+    elif x > 0.75:
+        return 1
+    else:
+        return x
 ```
 
 ## Reference
