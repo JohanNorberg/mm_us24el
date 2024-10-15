@@ -12,7 +12,7 @@ cache = dc.Cache('./cache')
 markets = []
 state_pairs = []
 
-simulations=200_000
+simulations=500_000
 
 state_map = {
         'AL': 'Alabama',
@@ -75,6 +75,8 @@ state_map = {
 
 inverse_state_map = {v: k for k, v in state_map.items()}
 
+
+
 def get_state_long_name(short_name):
 
     if short_name not in state_map:
@@ -88,6 +90,9 @@ def get_state_short_name(long_name):
         raise KeyError(f"State '{long_name}' not found.")
 
     return inverse_state_map[long_name]
+
+swing_states = ['Wisconsin', 'Michigan', 'Nevada', 'Pennsylvania', 'North Carolina', 'Georgia', 'Arizona']
+swing_states_short = [get_state_short_name(state) for state in swing_states]
 
 def adjust_odds(x):
 
@@ -278,6 +283,54 @@ def simulate_elections_adjusted():
 
     return results
 
+def simulate_elections_only_swing_states(): 
+    # If it's a swing state, use the odds without adjustment
+    # If it's not a swing state, set odds to 0 or 1 based on the closest probability
+
+    results = []
+
+    for idx in range(simulations):
+        democrat_votes_sim = 0
+        republican_votes_sim = 0
+        democrat_states_sim = []
+        republican_states_sim = []
+
+        for market in markets:
+
+            democrat_probability = market['democrat_probability']
+
+            if market['name'] not in swing_states:
+                if democrat_probability < 0.5:
+                    democrat_probability = 0
+                else:
+                    democrat_probability = 1
+            else:
+                if idx == 0:
+                    print(market['name'], democrat_probability)
+            
+            if random.random() < democrat_probability:
+                democrat_votes_sim += market['votes']
+
+                if market['name'] in swing_states:
+                    democrat_states_sim.append(market['name'])
+            else:
+                republican_votes_sim += market['votes']
+
+                if market['name'] in swing_states:
+                    republican_states_sim.append(market['name'])
+
+        results.append({
+            'democrat_votes_simulation': democrat_votes_sim,
+            'republican_votes_simulation': republican_votes_sim,
+            'democrat_states_simulation': democrat_states_sim,
+            'republican_states_simulation': republican_states_sim
+        })
+
+    return results
+
+
+
+
 def calculate_probabilities(results):
     """Calculate the number of wins and probabilities."""
     democrat_wins = sum(
@@ -317,7 +370,15 @@ def calculate_odds():
         simulation_results_with_pairs)
     median_result_with_pairs = get_median_results(simulation_results_with_pairs)
 
-    print(democrat_wins_with_pairs, republican_wins_with_pairs, democrat_prob_with_pairs, republican_prob_with_pairs)
+    #print(democrat_wins_with_pairs, republican_wins_with_pairs, democrat_prob_with_pairs, republican_prob_with_pairs)
+
+    # Step 6: Simulate elections with only swing states
+    simulation_results_only_swing_states = simulate_elections_only_swing_states()
+
+    # Step 7: Calculate probabilities and median results for only swing states
+    democrat_wins_only_swing_states, republican_wins_only_swing_states, democrat_prob_only_swing_states, republican_prob_only_swing_states = calculate_probabilities(
+        simulation_results_only_swing_states)
+    median_result_only_swing_states = get_median_results(simulation_results_only_swing_states)
 
 
     return {
@@ -356,6 +417,16 @@ def calculate_odds():
             'republican_states_median': median_result_with_pairs['republican_states_simulation'],
             'democrat_probability': democrat_prob_with_pairs,
             'republican_probability': republican_prob_with_pairs
+        },
+        'simulation_only_swing_states': {
+            'democrat_wins': democrat_wins_only_swing_states,
+            'republican_wins': republican_wins_only_swing_states,
+            'democrat_votes_median': median_result_only_swing_states['democrat_votes_simulation'],
+            'republican_votes_median': median_result_only_swing_states['republican_votes_simulation'],
+            'democrat_states_median': median_result_only_swing_states['democrat_states_simulation'],
+            'republican_states_median': median_result_only_swing_states['republican_states_simulation'],
+            'democrat_probability': democrat_prob_only_swing_states,
+            'republican_probability': republican_prob_only_swing_states
         }
     }
 
@@ -647,7 +718,21 @@ if __name__ == '__main__':
             'republican_states': a_to_s(list(map(get_state_short_name, odds_data['simulation_with_pairs']['republican_states_median']))),
             'democrat_probability': round(odds_data['simulation_with_pairs']['democrat_probability'] * 100),
             'republican_probability': round(odds_data['simulation_with_pairs']['republican_probability'] * 100)
-        }
+        },
+        'simulation_only_swing_states': {
+            'democrat_wins': odds_data['simulation_only_swing_states']['democrat_wins'],
+            'republican_wins': odds_data['simulation_only_swing_states']['republican_wins'],
+            'democrat_votes_median': odds_data['simulation_only_swing_states']['democrat_votes_median'],
+            'republican_votes_median': odds_data['simulation_only_swing_states']['republican_votes_median'],
+            'democrat_votes_median_percent': round(
+                (odds_data['simulation_only_swing_states']['democrat_votes_median'] / total_ev) * 100),
+            'republican_votes_median_percent': round(
+                (odds_data['simulation_only_swing_states']['republican_votes_median'] / total_ev) * 100),
+            'democrat_states': a_to_s(list(map(get_state_short_name, odds_data['simulation_only_swing_states']['democrat_states_median']))),
+            'republican_states': a_to_s(list(map(get_state_short_name, odds_data['simulation_only_swing_states']['republican_states_median']))),
+            'democrat_probability': round(odds_data['simulation_only_swing_states']['democrat_probability'] * 100),
+            'republican_probability': round(odds_data['simulation_only_swing_states']['republican_probability'] * 100)
+        }    
     }
 
     # Get the current UTC time and format it as a readable string
@@ -662,6 +747,7 @@ if __name__ == '__main__':
                                     simulation=mapped_odds_data['simulation'],
                                     simulation_adjusted=mapped_odds_data['simulation_adjusted'],
                                     simulation_with_pairs=mapped_odds_data['simulation_with_pairs'],
+                                    simulation_only_swing_states=mapped_odds_data['simulation_only_swing_states'],
                                     states=mapped_states,
                                     total_ev=total_ev,
                                     timestamp=current_time_utc,
