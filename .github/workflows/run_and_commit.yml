@@ -1,9 +1,7 @@
 name: Run and Commit Changes
 
-# Triggers the workflow every hour
-on:
-  schedule:
-    - cron: '0 * * * *'  # This cron expression runs the job every hour
+
+on: 
   workflow_dispatch:
 
 jobs:
